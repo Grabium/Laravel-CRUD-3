@@ -1,0 +1,235 @@
+Depois de criar o repositório no github crie o projeto:
+	Term: php composer --prefer-dist laravel/laravel <Projeto>
+
+Edite o nome e outros dados do bd (especialmente o nome)no
+	arquivo .env (no caso do Replit, no arquivo ".laravel.env" uso
+ 	as diretivas "DB_CONNECTION=sqlite" e "DB_DATABASE=crud_basic")
+
+Iniciar o apache e mysql no xampp (no pc).
+
+Criar migration e a classe modelo. Prefira um nome no singular:
+	Term: php artisan make:model <Entidade> -m
+	Se você nomear <Produto> (maiúsculo e singular) a tabela
+	será automaticamente <produtos> (minúsculo e plural)
+
+Editar as colunas/var/attrib na migration criada:
+	
+	public function up(): void
+    	{
+        	Schema::create('produtos', function (Blueprint $table) {
+            		$table->id();
+           		$table->string('nome');
+          		$table->decimal('custo', 19, 2);
+         		$table->decimal('preco', 19, 2);
+         	   	$table->integer('quantidade');
+		        $table->timestamps();
+        	});
+   	 }
+
+Contruir tables com a migração dos dados:
+	Term:php artisan migrate 
+	(no Replit o prompt irá perguntar se deseja criar o banco de dados. Digitar "yes")
+	Este comando acima cria tabelas no banco de dados incluindo ou 
+	revertendo informações_SQL/colunas/restrições_SQL/etc com methodos up(){} e/ou down(){}.
+
+No app/models/<Entidade> indicar as colunas editáveis dentro de:
+	protected $fillable = ['nome', 'custo', 'preco', 'quantidade'];
+
+Criar a classe controller da entidade (prefira nome no plural para isso):
+	Term: php artisan make:controller <Entidade(s)(Controller)>
+	Na classe controller da entidade, importe a classe model da mesma. Por exemplo:
+	use App\Models\Produto;
+	na rota, importe as classes controllers. Por exemplo:
+	use App\Http\Controllers\ProdutosController;
+
+
+------CREATE
+criar a view para criate. É uma possibilidade neste momento.
+Crie uma função no controller que retorne a função view.
+crie a route que dê um get na funcao citada acima.
+>>>>>OB: a classe HTTP/Request administra e armazena as requisiçõesde forms HTTP básicas:
+	Nos <form> html use atributo 'action' pra indicar a rota com a function 'store' e o 'method="POST"' para postar a requisição.
+	Já as tags <input> irão mandar informações http identificadas pelo atributo "name".
+	A rota do laravel irá identificar o método (neste caso 'post' e não 'get') e irá chamar a classe controladora e a referida função.
+	A função 'store()' irá receber um argumento e instanciar (Request $request) com atributos $request->valor_de_nameTag.
+	Declare a chamada <Entidade>::create(atributos recebidos http no obj $request) e salve (de forma similar à uma função construtora) os atributos 
+recebidos às colunas da tabela. passando-os como único (array) argumento para Produto::create() e não esqueça de importar a classe modelo <Entidade>
+ a qual foram indicadas as colunas editáveis dentro de protected $fillable = [](). 
+	Ex da chamada <Entidade>::create():
+
+--------------no controller
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Produto;
+
+class ProdutosController extends Controller
+{
+    public function create(){
+        return view('produtos.create');
+    }
+
+    public function store(Request $request){
+        Produto::create([
+            'nome'=>$request->nome,
+            'custo'=>$request->custo,
+            'preco'=>$request->preco,
+            'quantidade'=>$request->quantidade,
+        ]);
+        return view('produtos.create');
+    }
+}
+
+
+	
+
+
+------na view
+<!DOCTYPE html>
+<html lang="t-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Cadastrar um novo produto</title>
+    </head>
+
+    <body>
+        <form action="{{ route('registrarProduto') }}" method="POST">
+        @csrf
+            <legend>Crie um Novo Produto</legend>
+            <label for="">Nome</label><br />
+            <input type="text" name="nome"><br />
+            <label for="">Custo</label><br />
+            <input type="text" name="custo"><br />
+            <label for="">Preço</label><br />
+            <input type="text" name="preco"><br />
+            <label for="">Quantidade</label><br />
+            <input type="text" name="quantidade"><br />
+            <button>salvar</button>
+        </form>
+    </body>
+</html>
+
+
+
+
+
+---------------------READ---------------------------------------
+Para a partir de uma view, fazer-mos uma busca, usaremos o method post.
+Para uma view que mostra o resultado de uma pesquisa as tags <input> terão um atributo 
+chamdo "value" que receberá o valor enviado pelo controller com a função compact('produto').
+Para que isso aconteça, iremos criar a tela de pesquisa (post) e a de resultado.
+
+view de resultado:
+view/produtos/show.blade.php
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, inicial-scale=1.0"> 
+	<meta http-equiv="X-UA-Compatible" content="i-edge">
+	<title>Ver Produto</title>
+</head>
+<body>
+	<label for="">Nome</label></br>
+	<input type="text" name="nome" value="{{ $produto->nome }}"></br>
+{{-- criar as demais inputs e labels: custo, preco e quantidade --}}
+</body>
+
+
+Na classe de contntrole usaremos a função findOrFail($busca){} herdada da 
+classe do model. Esta function receberá parâmetros da rota e retornará um objeto.
+Este objeto será um retorno da função show($busca){} junto com o chamado da view. 
+
+________________________________________________
+|Buscar pelo host (ignorar esta parte):
+|public function show($id){
+|	$produto = Produto::findOrFail($id);
+|	return view('produtos/show',['produto' => $produto])
+|}
+|
+|E a devida rota para exibir o resultado da pelo host:
+|Route::get('/produto/ver/{id}', [ProdutosController::class, 'show']);
+|_____________________________________________________
+
+Buscar por uma view:
+public function show(Request $request){
+	$produto = Produto::findOrFail($request->id);
+	$statusOperacao = 'encontrado'; //para o blade identificar qual operação ocorreu.
+	$produto = Produto::findOrFail($request->id); //acha o objeto já atualizado para exibição.
+	return view('produtos/show', compact('produto', 'statusOperacao'));
+}
+
+
+.......Agora vamos criar o buscador........
+
+
+<!DOCTYPE html>
+<html lang="t-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Buscar Produto</title>
+    </head>
+
+    <body>
+        <form action="{{ route('buscar') }}" method="POST">
+        @csrf
+        {{-- 
+        --}}
+            <legend>Buscador de Produtos</legend>
+            <label for="">Digite o ID:</label><br />
+            <input type="text" name="id"><br />
+            <button>Buscar</button>
+        </form>
+    </body>
+</html>
+
+A rota que envia o id:
+Route::post('/produtos/buscar', [ProdutosController::class, 'show'])-name('buscar');
+
+Na pagina produtos/show.blade.php, além dos passos acima citados, 
+pode-se acrescentar uma satisfação para o usuário:
+
+@switch($statusOperacao)
+{{-- para o update e para o read --}}
+	@case('atualizado')
+		<h4>{{ $produto->nome }} atualizado com sucesso!</h4>
+	@break
+	@case('encontrado')
+		<h4>Produto correspondente ao ID: {{ $produto->id }}!</h4>
+	@break
+@endswitch
+
+---------------------UPDATE---------------------------------------
+
+Para o UPDATE podemos começar a partir da READ. Afinal, para atualizar é preciso pesquisar antes.
+Próximos passos:
+-Transformar a view de resultado de busca (do READ) num formulário <form> com method post.
+-Criar um <button> no <form>.
+-Rotear a action do <form> para edição no controller.
+-Em ProdutosController.php:
+
+
+public function update(Request $request){
+	$produto = Produto::findOrFail($request->id);
+	$produto->update([
+		'nome'       => $request->nome;
+		'custo'      => $request->custo;
+		'preco'      => $request->preco;
+		'quantidade' => $request->quantidade;
+	]);
+	$statusOperacao = 'atualizado'; //para o blade identificar qual operação ocorreu.
+	$produto = Produto::findOrFail($request->id); //acha o objeto já atualizado para exibição.
+	return view('produtos/show', compact('produto', 'statusOperacao'));
+}
+
+
+
+
+

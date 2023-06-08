@@ -1,0 +1,23 @@
+MOdel
+Produto:
+Usuario:
+
+
+Controllers:-----------------------------------------------
+Principal_Contr
+	+loadPagePrincipal()  *home.
+Produto_Contr
+	+loadPageBuscarID()   *buscarID
+	+encontrar(),         *edicao
+	+loadPageCriar()      *criar
+	+criar(),             *resultado
+	+atualizar(),         *resultado
+	+deletar(),           *resultado
+
+Views:-----------------------------------------------------
+	*home,                +loadPageBuscarID() +loadPageCriar().
+	*buscarID,            +encontrar()
+	*edicao,              +atualizar() +deletar().
+	*resultado,           +loadPagePrincipal().
+	*criar,               +criar()
+
