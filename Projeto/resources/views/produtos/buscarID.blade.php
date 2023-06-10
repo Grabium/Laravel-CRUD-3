@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+  	<meta charset="UTF-8">
+  	<meta name="viewport" content="width=device-width, inicial-scale=1.0"> 
+  	<meta http-equiv="X-UA-Compatible" content="i-edge">
+  	<title>Buscar Produto por ID</title>
+  </head>
+  <body>
+    <h4>Indique o ID do produto a buscar:</h4>
+    <form action="{{ route('buscarID') }}" method='post'>
+    @csrf
+    	<label for="">ID: </label><br />
+    	<input type="text" name="id"><br />
+      <button>Buscar</button>
+    </form>
+  </body>
+</html>

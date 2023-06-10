@@ -27,9 +27,9 @@
     <label >Quantidade:... {{ $produtoCriado->quantidade }} .</label><br /> 
       @break
       @case('deletado')
-    <h4>Produto {{ $produtoDeletado->id }} foi DELETADO!.</h4>
-    <label >ID:........... {{ $produtoDeletado->id }} .</label><br />
-    <label >Nome:......... {{ $produtoDeletado->nome }} .</label><br />    
+      
+    <h4>O item foi DELETADO!.</h4>
+ 
       @break
     @endswitch
     <button><a href="{{ route('home') }}">Início</a></button>

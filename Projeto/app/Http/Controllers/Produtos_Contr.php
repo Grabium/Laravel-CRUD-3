@@ -7,17 +7,23 @@ use App\Models\Produto;
 
 class Produtos_Contr extends Controller
 {
-    public function loadPageEncontrar(){
-        return view('buscarID');
+    public function loadPageBuscarID(){
+        return view('/produtos/buscarID');
     }
     
-    public function encontrar(Request $request){
+    public function buscarID(Request $request){
          $produto = Produto::findOrFail($request->id);
-         //$statusOperacao = 'encontrado';
-         return view('edicao', compact('produto'));//, 'statusOperacao'));
+         return view('/produtos/edicao', compact('produto'));
+    }
+
+    public function index(){
+        $todos = Produto::all();
+        return $todos;
     }
   
     public function atualizar(Request $request, $id){
+
+        
         $produto = Produto::findOrFail($id);
         $produto->update([
                 'nome'       => $request->nome,
@@ -27,9 +33,9 @@ class Produtos_Contr extends Controller
           ]);
           $statusOperacao = 'atualizado';
           $produto = Produto::findOrFail($request->id);
-          return view('resultado', compact('produto', 'statusOperacao'));
+          return view('/produtos/resultado', compact('produto', 'statusOperacao'));
     }
-  
+
     public function loadPageCriar(){
         return view('/produtos/criar');
     }
@@ -50,12 +56,19 @@ class Produtos_Contr extends Controller
         //dd($produtoCriado);
         return view('/produtos/resultado', compact('produtoCriado', 'statusOperacao'));
     }
+
+    public function loadPageDeletar(Request $request, $id){
+
+        $produto = $request;
+        return view('/produtos/confirmarDelete', compact('produto', 'id'));
+    }
   
-    public function deletar(Request $request){
-        $produto = Produto::findOrFail($request->id);
-        $produtoDeletado = ['nome'=>$produto->nome, 'id'=>$produto->id];
+    public function deletar(Request $request, $id){
+        $produto = Produto::findOrFail($id);
+        //$produtoDeletado = ['nome'=>$produto->nome, 'ident'=>$produto->id];
+        //dd($produtoDeletado);
         $produto->delete();
         $statusOperacao = 'deletado';
-        return view('resultado', compact('produtoDeletado', 'statusOperacao'));
+        return view('/produtos/resultado', compact('statusOperacao'));
     }
 }

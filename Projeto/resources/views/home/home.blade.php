@@ -9,7 +9,7 @@
   <body>
     <h1>Escolha a operação:</h1>
     Crie ou busque um item para atualizar ou deletar<br />
-    <button><a href="{{-- route('loadPageBuscarID') --}}">Buscar</a></button><br />
+    <button><a href="{{ route('loadPageBuscarID') }}">Buscar</a></button><br />
     <button><a href="{{ route('loadPageCriar') }}">Criar</a></button><br />
   </body>
 </html>

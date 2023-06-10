@@ -8,7 +8,7 @@ Principal_Contr
 	+loadPagePrincipal()  *home.
 Produto_Contr
 	+loadPageBuscarID()   *buscarID
-	+encontrar(),         *edicao
+	+buscarID(),          *edicao
 	+loadPageCriar()      *criar
 	+criar(),             *resultado
 	+atualizar(),         *resultado
@@ -16,7 +16,7 @@ Produto_Contr
 
 Views:-----------------------------------------------------
 	*home,                +loadPageBuscarID() +loadPageCriar().
-	*buscarID,            +encontrar()
+	*buscarID,            +buscarID()
 	*edicao,              +atualizar() +deletar().
 	*resultado,           +loadPagePrincipal().
 	*criar,               +criar()
